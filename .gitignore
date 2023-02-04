@@ -1,0 +1,10 @@
+*.o
+mtrace*.txt
+makefile.dep
+config.h
+config.mk
+config.log
+config.sh
+0mtrace_*
+0runtests*
+00wc

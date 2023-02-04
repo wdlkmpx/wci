@@ -1,0 +1,103 @@
+# - https://circleci.com/docs/variables/
+# - https://circleci.com/developer/images?imageType=machine
+# - https://circleci.com/docs/using-docker/
+
+version: 2.1
+
+
+commands:
+  docker_build:
+    steps:
+      - run:
+          name: "Build and test app"
+          command: |
+            CURDIR=$(pwd)
+            docker exec -it WCONTAINER mkdir -p /tmp
+            docker cp $CURDIR WCONTAINER:/tmp/
+            docker exec -it WCONTAINER sh -c "
+                        set -ex;
+                        pwd;
+                        cd /tmp/$(basename $CURDIR);
+                        ./scripts/test_ci.sh;
+                        "
+
+
+jobs:
+  debian_s390x:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: medium
+    environment:
+      DOCKER_BUILDKIT: 1
+    steps:
+      - run: printenv
+      - checkout
+      - run:
+          name: Enable run containers with different architectures
+          command: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+      - run:
+          name: Run docker container for s390x
+          command: docker run -it -d --platform linux/s390x --name WCONTAINER wdlkmpx/gcc:s390x_debian
+#          command: docker run -it -d --platform linux/s390x --name WCONTAINER s390x/debian
+#      - run:
+#          name: "Install deps"
+#          command: docker exec -it WCONTAINER sh -c "
+#                        set -ex;
+#                        apt update;
+#                        apt upgrade -y;
+#                        apt-get install -y git build-essential gdb;
+#                        "
+      - docker_build
+  alpine_s390x:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: medium
+    environment:
+      DOCKER_BUILDKIT: 1
+    steps:
+      - checkout
+      - run:
+          name: Enable run containers with different architectures
+          command: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+      - run:
+          name: Run docker container for s390x
+          command: docker run -it -d --platform linux/s390x --name WCONTAINER wdlkmpx/gcc:s390x_alpine
+#         command: docker run -it -d --platform linux/s390x --name WCONTAINER s390x/alpine
+#      - run:
+#          name: "Install deps"
+#          command: docker exec -it WCONTAINER sh -c "apk add --no-cache ..."
+      - docker_build
+#
+# gcc 4.7
+  gcc_4_7:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: medium
+    environment:
+      DOCKER_BUILDKIT: 1
+    steps:
+      - checkout
+      - run:
+          name: Run docker container for gcc
+          command: docker run -it -d --name WCONTAINER gcc:4.7
+      - docker_build
+
+
+workflows:
+  build_and_test:
+    jobs:
+      - debian_s390x:
+          filters:
+            branches:
+              only:
+                - master
+      - alpine_s390x:
+          filters:
+            branches:
+              only:
+                - master
+      - gcc_4_7:
+          filters:
+            branches:
+              only:
+                - master

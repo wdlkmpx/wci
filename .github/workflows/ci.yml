@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+#  pull_request:
+#    branches: [ master ]
+
+jobs:
+  macOS:
+    runs-on: macos-latest
+#   runs-on: macos-11
+    name: macOS
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Build and test app
+      run: |
+        ./scripts/test_ci.sh
+#   - name: make
+#     run: make
+
+#  Ubuntu:
+#    runs-on: ubuntu-latest
+#    name: Ubuntu
+#    steps:
+#    - name: Checkout repository
+#      uses: actions/checkout@v3
+#    - name: Build and test app
+#      run: |
+#        ./scripts/test_ci.sh
+
+
+##====== https://github.com/vmactions/
+## - the BSDs are quite slow
+## - Solaris is extremely slow (30 minutes), unusable
+
+#  Solaris:
+#    runs-on: macos-latest
+#    name: Solaris
+#    steps:
+#    - uses: actions/checkout@v3
+#    - name: Test in Solaris
+#      id: test
+#      uses: vmactions/solaris-vm@v0
+#      with:
+#        usesh: true
+#        prepare: |
+#          pkgutil -y -i gcc5core gcc5g++
+#        run: |
+#          ./scripts/test_ci.sh
+
+#  FreeBSD:
+#    runs-on: macos-latest
+#    name: FreeBSD
+#    steps:
+#    - uses: actions/checkout@v3
+#    - name: Test in FreeBSD
+#      id: test
+#      uses: vmactions/freebsd-vm@v0
+#      with:
+#        usesh: true
+##        prepare: |
+##          pkg install -y ...
+#        run: |
+#          ./scripts/test_ci.sh
+
+#  OpenBSD:
+#    runs-on: macos-latest
+#    name: OpenBSD
+#    steps:
+#    - uses: actions/checkout@v3
+#    - name: Test in OpenBSD
+#      id: test
+#      uses: vmactions/openbsd-vm@v0
+#      with:
+#        usesh: true
+##        prepare: |
+##          pkg_add ...
+#        run: |
+#          ./scripts/test_ci.sh
+
+#  NetBSD:
+#    runs-on: macos-latest
+#    name: NetBSD
+#    steps:
+#    - uses: actions/checkout@v3
+#    - name: Test in NetBSD
+#      id: test
+#      uses: vmactions/netbsd-vm@v0
+#      with:
+#        usesh: true
+#        prepare: |
+#          pkg_add ...
+#        run: |
+#          ./scripts/test_ci.sh
+

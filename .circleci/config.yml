@@ -1,0 +1,28 @@
+# - https://circleci.com/docs/variables/
+# - https://circleci.com/developer/images?imageType=machine
+# - https://circleci.com/docs/using-docker/
+
+version: 2.1
+
+jobs:
+  linux_test:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: medium
+    environment:
+      DOCKER_BUILDKIT: 1
+    steps:
+      - run: printenv
+      - checkout
+      - run:
+          name: Run script
+          command: ./scripts/test_ci.sh
+
+workflows:
+  build_and_test:
+    jobs:
+      - linux_test:
+          filters:
+            branches:
+              only:
+                - master
