@@ -81,20 +81,33 @@ only_if: $CIRRUS_PR == ''
 #    - ./scripts/test_ci.sh
 
 
-task:
-  name: Test in docker img(s)
-  compute_engine_instance:
+## https://cloud.google.com/compute/docs/containers
+#task:
+#  name: run in docker img(s)
+#  compute_engine_instance:
 #    image_project: cos-cloud
-#    image_family: cos-stable
-    image_project: fedora-coreos-cloud
-    image_family: fedora-coreos-stable
+#    image: family/cos-stable
+##    image_project: fedora-coreos-cloud
+##    image: family/fedora-coreos-stable
+#    platform: linux
+#    cpu: 1
+#    memory: 2G
+##  only_if: $CIRRUS_PR == ''
+#  # temp hack, test_ci.sh needs a special logic for cirrus
+#  env:
+#    CIRCLECI: true
+#  build_script:
+#    - ./scripts/test_ci.sh
+
+
+task:
+  name: Google COS
+  compute_engine_instance:
+    image_project: cos-cloud
+    image: family/cos-stable
     platform: linux
     cpu: 1
     memory: 2G
-#  only_if: $CIRRUS_PR == ''
-  # temp hack, test_ci.sh needs a special logic for cirrus
-  env:
-    CIRCLECI: true
   build_script:
     - ./scripts/test_ci.sh
 
